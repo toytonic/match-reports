@@ -1,10 +1,11 @@
-import { Box, Container, ThemeProvider, Typography } from "@mui/material";
+import { Box, Container, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
+import Reports from "./components/Reports";
 import { theme } from "./theme";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -17,10 +18,7 @@ function App() {
         <Container component="main" sx={{ py: 3, display: "flex" }}>
           <Navbar />
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h4">Reports</Typography>
-            <Typography variant="h6" color="grey">
-              Easily generate a report of your transactions
-            </Typography>
+            <Reports />
           </Box>
         </Container>
         <Footer />

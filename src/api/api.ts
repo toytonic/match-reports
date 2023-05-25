@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export type ApiResponse<T = unknown> = {
-  code: number;
+  code: string;
   data: T;
   error: null | string;
 };
