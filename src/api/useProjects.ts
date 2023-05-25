@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, api } from "./api";
 
-type Projects = {
+export type Projects = {
   description: string;
   gatewayIds: string[];
   image: string;

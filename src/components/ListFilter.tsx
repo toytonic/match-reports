@@ -1,14 +1,15 @@
-import { Button, Menu, MenuItem, Stack } from "@mui/material";
-import { useState } from "react";
+import { Box, Button, Menu, MenuItem, Stack } from "@mui/material";
+import { useMemo, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 type Props = {
   label: string;
+  value?: string;
   items?: { label: string; id: string }[];
   onSelect: (id: string | null) => void;
 };
 
-function ListFilter({ label, items, onSelect }: Props) {
+function ListFilter({ label, items, onSelect, value }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -20,25 +21,37 @@ function ListFilter({ label, items, onSelect }: Props) {
     setAnchorEl(null);
   };
 
+  const selectedLabel = useMemo(
+    () => items?.find((item) => item.id === value)?.label,
+    [items, value]
+  );
+
   return (
-    <Stack direction="row" spacing={1}>
+    <Box>
       <Button
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
         variant="contained"
         color="secondary"
       >
-        {label}
+        {selectedLabel ?? label}
       </Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={() => onSelect(null)}>All</MenuItem>
+        <MenuItem onClick={() => onSelect(null)}>{label}</MenuItem>
         {items?.map(({ id, label }) => (
-          <MenuItem key={id} onClick={() => onSelect(id)}>
+          <MenuItem
+            key={id}
+            onClick={() => {
+              onSelect(id);
+              setAnchorEl(null);
+            }}
+            selected={id === value}
+          >
             {label}
           </MenuItem>
         ))}
       </Menu>
-    </Stack>
+    </Box>
   );
 }
 

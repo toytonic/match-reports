@@ -1,40 +1,61 @@
 import { Button, Stack } from "@mui/material";
+import { useMemo, useState } from "react";
+import { Gateways } from "../api/useGateways";
+import { Projects } from "../api/useProjects";
+import DateFilter from "./DateFilter";
 import ListFilter from "./ListFilter";
-import { useGateways } from "../api/useGateways";
-import { useProjects } from "../api/useProjects";
-import { useMemo } from "react";
+import { Params } from "../api/useReport";
+
+type Filter = Params;
 
 type Props = {
-  onFilterSelect: () => void;
+  projects: Projects[];
+  gateways: Gateways[];
+  onGenerate: (filter: Filter) => void;
 };
 
-function FilterMenu({ onFilterSelect }: Props) {
-  const { data: gateways } = useGateways();
-  const { data: projects } = useProjects();
+function FilterMenu({ onGenerate, projects, gateways }: Props) {
+  const [filter, setFilter] = useState<Filter>({});
 
   const projectFilter = useMemo(
     () => projects?.map(({ projectId: id, name: label }) => ({ id, label })),
     [projects]
   );
 
-  const gateWayFilter = useMemo(
+  const gatewayFilter = useMemo(
     () => gateways?.map(({ gatewayId: id, name: label }) => ({ id, label })),
     [gateways]
   );
 
+  const handleFilterSelect = (selectedFilter: Partial<Filter>) => {
+    setFilter({ ...filter, ...selectedFilter });
+  };
+
   return (
     <Stack direction="row" spacing={1}>
       <ListFilter
-        label="Projects"
+        label="All Projects"
         items={projectFilter}
-        onSelect={console.log}
+        value={filter.projectId}
+        onSelect={(value) => handleFilterSelect({ projectId: value })}
       />
       <ListFilter
-        label="Gateways"
-        items={gateWayFilter}
-        onSelect={console.log}
+        label="All Gateways"
+        items={gatewayFilter}
+        value={filter.gatewayId}
+        onSelect={(value) => handleFilterSelect({ gatewayId: value })}
       />
-      <Button variant="contained">Generate Report</Button>
+      <DateFilter
+        label="From date"
+        onSelect={(value) => handleFilterSelect({ from: value })}
+      />
+      <DateFilter
+        label="To date"
+        onSelect={(value) => handleFilterSelect({ to: value })}
+      />
+      <Button variant="contained" onClick={() => onGenerate(filter)}>
+        Generate Report
+      </Button>
     </Stack>
   );
 }
