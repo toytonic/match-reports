@@ -34,7 +34,12 @@ function Reports() {
       </Box>
 
       {isFiltersLoaded && report ? (
-        <ReportTable report={report} gateways={gateways} projects={projects} />
+        <ReportTable
+          report={report}
+          gateways={gateways}
+          projects={projects}
+          filter={filter}
+        />
       ) : null}
     </>
   );

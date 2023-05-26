@@ -1,15 +1,16 @@
 import { Box, Typography } from "@mui/material";
 import { Gateways } from "../api/useGateways";
 import { Projects } from "../api/useProjects";
-import { Payment } from "../api/useReport";
+import { Params, Payment } from "../api/useReport";
 import PaymentTable from "./PaymentTable";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatCurrency } from "../utils/currency";
 
 type Props = {
   projects: Projects[];
   gateways: Gateways[];
   report: Payment[];
+  filter: Params;
 };
 
 type GroupedReport = {
@@ -19,7 +20,23 @@ type GroupedReport = {
   };
 };
 
-function ReportTable({ report, projects }: Props) {
+function TableTitle({ projects, gateways, filter }: Omit<Props, "report">) {
+  const projectName =
+    projects.find(({ projectId }) => projectId === filter.projectId)?.name ??
+    "All projects";
+
+  const gatewayName =
+    gateways.find(({ gatewayId }) => gatewayId === filter.gatewayId)?.name ??
+    "All gateways";
+
+  return (
+    <Typography fontWeight="bold" mb={2}>
+      {projectName} | {gatewayName}
+    </Typography>
+  );
+}
+
+function ReportTable({ report, projects, gateways, filter }: Props) {
   const [visibleIds, setVisibleIds] = useState<string[]>([]);
 
   const groupedReport = useMemo(
@@ -55,6 +72,8 @@ function ReportTable({ report, projects }: Props) {
           borderRadius: 2,
         }}
       >
+        <TableTitle projects={projects} gateways={gateways} filter={filter} />
+
         {Object.keys(groupedReport).map((projectId) => {
           const group = groupedReport[projectId];
           const name = projects.find(
