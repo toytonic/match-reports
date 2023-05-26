@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, api } from "./api";
 
 export type Payment = {
-  amount: string;
+  amount: number;
   projectId: string;
   gatewayId: string;
   paymentId: string;
@@ -29,5 +29,9 @@ export function useReport({ from, to, projectId, gatewayId }: Params) {
   return useQuery({
     queryKey: ["report", from, to, projectId, gatewayId],
     queryFn: () => getReport({ from, to, projectId, gatewayId }),
+    select: (data) =>
+      data.sort((a, b) =>
+        a.created < b.created ? 1 : a.created > b.created ? -1 : 0
+      ),
   });
 }

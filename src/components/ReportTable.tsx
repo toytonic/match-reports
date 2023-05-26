@@ -1,29 +1,10 @@
-import {
-  Box,
-  Table,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Gateways } from "../api/useGateways";
 import { Projects } from "../api/useProjects";
 import { Payment } from "../api/useReport";
-
-const StyledTableRow = styled(TableRow)`
-  td {
-    border: none;
-  }
-
-  &:nth-of-type(odd) {
-    background: ${({ theme }) => theme.palette.background.default};
-  }
-
-  &:nth-of-type(even) {
-    background: ${({ theme }) => theme.palette.background.paper};
-  }
-`;
+import PaymentTable from "./PaymentTable";
+import { Fragment, useMemo, useState } from "react";
+import { formatCurrency } from "../utils/currency";
 
 type Props = {
   projects: Projects[];
@@ -31,37 +12,89 @@ type Props = {
   report: Payment[];
 };
 
-function ReportTable({ report, projects, gateways }: Props) {
+type GroupedReport = {
+  [projectId: string]: {
+    payments: Payment[];
+    total: number;
+  };
+};
+
+function ReportTable({ report, projects }: Props) {
+  const [visibleIds, setVisibleIds] = useState<string[]>([]);
+
+  const groupedReport = useMemo(
+    () =>
+      report.reduce<GroupedReport>((acc, payment) => {
+        const currentPayments = acc[payment.projectId]?.payments ?? [];
+        const currentTotal = acc[payment.projectId]?.total ?? 0;
+
+        acc[payment.projectId] = {
+          payments: [...currentPayments, payment],
+          total: currentTotal + payment.amount,
+        };
+
+        return acc;
+      }, {}),
+    [report]
+  );
+
+  const allTotal = report.reduce((acc, payment) => acc + payment.amount, 0);
+
+  const toggleTableVisible = (id: string) =>
+    setVisibleIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+
   return (
     <>
-      <Box>
-        <Table>
-          <TableHead>
-            <TableCell>
-              <Typography>Date</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography>Gateway</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography>Transaction ID</Typography>
-            </TableCell>
-            <TableCell align="right">
-              <Typography>Amount</Typography>
-            </TableCell>
-          </TableHead>
-          {report.map(({ amount, created, gatewayId, paymentId }) => (
-            <StyledTableRow>
-              <TableCell>{created}</TableCell>
-              <TableCell>{gatewayId}</TableCell>
-              <TableCell>{paymentId}</TableCell>
-              <TableCell align="right">{amount} USD</TableCell>
-            </StyledTableRow>
-          ))}
-        </Table>
+      <Box
+        sx={{
+          mb: 2,
+          p: 2,
+          backgroundColor: "background.paper",
+          borderRadius: 2,
+        }}
+      >
+        {Object.keys(groupedReport).map((projectId) => {
+          const group = groupedReport[projectId];
+          const name = projects.find(
+            (project) => project.projectId === projectId
+          )?.name;
+
+          return (
+            <Box key={projectId} sx={{ mb: 2 }}>
+              <Box
+                onClick={() => toggleTableVisible(projectId)}
+                sx={{
+                  display: "flex",
+                  cursor: "pointer",
+                  backgroundColor: "background.default",
+                  borderRadius: 2,
+                  p: 2,
+                }}
+              >
+                <Typography fontWeight="bold">{name}</Typography>
+                <Typography fontWeight="bold" sx={{ ml: "auto" }}>
+                  Total: {formatCurrency(group.total)} USD
+                </Typography>
+              </Box>
+              {visibleIds.includes(projectId) ? (
+                <PaymentTable payments={group.payments} />
+              ) : null}
+            </Box>
+          );
+        })}
       </Box>
-      <Box>
-        <Typography>TOTAL: </Typography>
+      <Box
+        sx={{
+          backgroundColor: "background.paper",
+          p: 2,
+          borderRadius: 2,
+        }}
+      >
+        <Typography fontWeight="bold">
+          Total: {formatCurrency(allTotal)} USD
+        </Typography>
       </Box>
     </>
   );

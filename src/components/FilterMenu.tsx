@@ -14,6 +14,9 @@ type Props = {
   onGenerate: (filter: Filter) => void;
 };
 
+const minDate = "2021-01-01";
+const maxDate = "2021-12-31";
+
 function FilterMenu({ onGenerate, projects, gateways }: Props) {
   const [filter, setFilter] = useState<Filter>({});
 
@@ -47,11 +50,17 @@ function FilterMenu({ onGenerate, projects, gateways }: Props) {
       />
       <DateFilter
         label="From date"
-        onSelect={(value) => handleFilterSelect({ from: value })}
+        value={filter.from}
+        onSelect={(value) =>
+          handleFilterSelect({ from: value, to: filter.to ?? maxDate })
+        }
       />
       <DateFilter
         label="To date"
-        onSelect={(value) => handleFilterSelect({ to: value })}
+        value={filter.to}
+        onSelect={(value) =>
+          handleFilterSelect({ to: value, from: filter.from ?? minDate })
+        }
       />
       <Button variant="contained" onClick={() => onGenerate(filter)}>
         Generate Report
