@@ -26,32 +26,29 @@ const StyledTableRow = styled(TableRow)`
 
 type Props = {
   payments: Payment[];
+  showGateway?: boolean;
 };
 
-function PaymentTable({ payments }: Props) {
+function PaymentTable({ payments, showGateway }: Props) {
   return (
     <Table>
       <TableHead>
         <TableRow>
           <TableCell>Date</TableCell>
-          <TableCell>Gateway</TableCell>
+          {showGateway ? <TableCell>Gateway</TableCell> : null}
           <TableCell>Transaction ID</TableCell>
           <TableCell align="right">Amount</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {payments
-          //   .sort((a, b) =>
-          //     a.created < b.created ? 1 : a.created > b.created ? -1 : 0
-          //   )
-          .map(({ amount, created, gatewayId, paymentId }) => (
-            <StyledTableRow key={paymentId}>
-              <TableCell>{formatDate(created)}</TableCell>
-              <TableCell>{gatewayId}</TableCell>
-              <TableCell>{paymentId}</TableCell>
-              <TableCell align="right">{formatCurrency(amount)} USD</TableCell>
-            </StyledTableRow>
-          ))}
+        {payments.map(({ amount, created, gatewayId, paymentId }) => (
+          <StyledTableRow key={paymentId}>
+            <TableCell>{formatDate(created)}</TableCell>
+            {showGateway ? <TableCell>{gatewayId}</TableCell> : null}
+            <TableCell>{paymentId}</TableCell>
+            <TableCell align="right">{formatCurrency(amount)} USD</TableCell>
+          </StyledTableRow>
+        ))}
       </TableBody>
     </Table>
   );

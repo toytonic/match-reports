@@ -1,20 +1,75 @@
 import { Box, Typography } from "@mui/material";
 import FilterMenu from "./FilterMenu";
-import { Params, useReport } from "../api/useReport";
-import { useGateways } from "../api/useGateways";
-import { useProjects } from "../api/useProjects";
+import { Params, useReport, Payment } from "../api/useReport";
+import { Gateways, useGateways } from "../api/useGateways";
+import { Projects, useProjects } from "../api/useProjects";
 import { useState } from "react";
 import ReportTable from "./ReportTable";
+import PaymentTable from "./PaymentTable";
+import TableTitle from "./TableTitle";
+import PaymentTotal from "./PaymentTotal";
+import ProjectTable from "./ProjectTable";
+import Empty from "./Empty";
 
 type Filter = Params;
+
+type Props = {
+  gateways: Gateways[];
+  projects: Projects[];
+  payments: Payment[];
+  filter: Filter;
+};
+
+function TableSwitch({ gateways, projects, payments, filter }: Props) {
+  if (filter.projectId && filter.gatewayId) {
+    //TODO: move to component?
+    const total = payments.reduce((acc, payment) => acc + payment.amount, 0);
+
+    return (
+      <>
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            backgroundColor: "background.paper",
+            borderRadius: 2,
+          }}
+        >
+          <TableTitle projects={projects} gateways={gateways} filter={filter} />
+          <PaymentTable payments={payments} />
+        </Box>
+        <PaymentTotal total={total} />
+      </>
+    );
+  }
+
+  if (filter.projectId && !filter.gatewayId) {
+    return (
+      <ProjectTable
+        payments={payments}
+        projectId={filter.projectId}
+        groupIdKey="projectId"
+      />
+    );
+  }
+
+  return (
+    <ReportTable
+      payments={payments}
+      gateways={gateways}
+      projects={projects}
+      filter={filter}
+    />
+  );
+}
 
 function Reports() {
   const [filter, setFilter] = useState<Filter>({});
   const { data: gateways } = useGateways();
   const { data: projects } = useProjects();
-
-  const { data: report } = useReport(filter);
+  const { data: payments } = useReport(filter);
   const isFiltersLoaded = gateways && projects;
+  const isDataLoaded = isFiltersLoaded && payments;
 
   return (
     <>
@@ -33,14 +88,16 @@ function Reports() {
         ) : null}
       </Box>
 
-      {isFiltersLoaded && report ? (
-        <ReportTable
-          report={report}
+      {isDataLoaded && payments.length ? (
+        <TableSwitch
+          payments={payments}
           gateways={gateways}
           projects={projects}
           filter={filter}
         />
-      ) : null}
+      ) : (
+        <Empty />
+      )}
     </>
   );
 }
