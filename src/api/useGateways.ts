@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, api } from "./api";
 
-export type Gateways = {
+export type Gateway = {
   apiKey: string;
   description: string;
   gatewayId: string;
@@ -14,7 +14,7 @@ export type Gateways = {
 async function getGateways() {
   const {
     data: { data },
-  } = await api.get<ApiResponse<Gateways[]>>("gateways");
+  } = await api.get<ApiResponse<Gateway[]>>("gateways");
   return data;
 }
 

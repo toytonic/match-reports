@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
-import { Gateways } from "../api/useGateways";
-import { Projects } from "../api/useProjects";
-import { Params } from "../api/useReport";
+import { Gateway } from "../api/useGateways";
+import { Project } from "../api/useProjects";
+import { FilterParams } from "../api/useReport";
 
 type Props = {
-  projects: Projects[];
-  gateways: Gateways[];
-  filter: Params;
+  projects: Project[];
+  gateways: Gateway[];
+  filter: FilterParams;
 };
 
 function TableTitle({ projects, gateways, filter }: Props) {

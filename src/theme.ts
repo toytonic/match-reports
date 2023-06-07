@@ -4,18 +4,18 @@ const theme = createTheme({
   palette: {
     primary: {
       main: "#005B96",
-      contrastText: "#fff",
+      contrastText: "#FFF",
     },
     secondary: {
       main: "#1BC5BD",
-      contrastText: "#fff",
+      contrastText: "#FFF",
     },
     divider: "#F3F6F9",
     text: {
       primary: "#011F4B",
     },
     background: {
-      default: "#fff",
+      default: "#FFF",
       paper: "#F1FAFE",
     },
   },

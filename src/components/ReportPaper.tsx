@@ -1,7 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, SxProps } from "@mui/material";
 import { PropsWithChildren } from "react";
 
-function ReportPaper({ children }: PropsWithChildren) {
+type Props = PropsWithChildren<{ sx?: SxProps }>;
+
+function ReportPaper({ children, sx = {} }: Props) {
   return (
     <Box
       sx={{
@@ -9,6 +11,7 @@ function ReportPaper({ children }: PropsWithChildren) {
         p: 2,
         backgroundColor: "background.paper",
         borderRadius: 2,
+        ...sx,
       }}
     >
       {children}

@@ -1,23 +1,25 @@
 import { Box, Container, Typography } from "@mui/material";
-import { useUser } from "../api/useUser";
 import { ReactComponent as LogoSvg } from "../assets/svg/logo.svg";
 import { ReactComponent as NavToggleSvg } from "../assets/svg/nav-toggle.svg";
+import { useAuthContext } from "../auth/AuthProvider";
 
 function Header() {
-  const { data: user } = useUser();
+  const { user } = useAuthContext();
 
   return (
     <Box sx={{ borderBottom: 1, borderColor: "divider" }} component="header">
-      <Container sx={{ display: "flex", alignItems: "center", height: 80 }}>
+      <Container
+        sx={{ display: "flex", alignItems: "center", height: 80 }}
+        maxWidth={false}
+      >
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <LogoSvg />
           <NavToggleSvg />
         </Box>
         {user ? (
-          <>
+          <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
             <Box
               sx={{
-                ml: "auto",
                 mr: 2,
                 width: 43,
                 height: 43,
@@ -33,12 +35,10 @@ function Header() {
                 {user.lastName[0].toUpperCase()}
               </Typography>
             </Box>
-            <Box>
-              <Typography variant="h6">
-                {user.firstName} {user.lastName}
-              </Typography>
-            </Box>
-          </>
+            <Typography fontWeight="bold">
+              {user.firstName} {user.lastName}
+            </Typography>
+          </Box>
         ) : null}
       </Container>
     </Box>

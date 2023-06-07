@@ -11,21 +11,21 @@ export type Payment = {
   userIds: string[];
 };
 
-async function getReport(params: Params) {
+async function getReport(params: FilterParams) {
   const {
     data: { data },
   } = await api.post<ApiResponse<Payment[]>>("report", params);
   return data;
 }
 
-export type Params = {
+export type FilterParams = {
   from?: string;
   to?: string;
   projectId?: string;
   gatewayId?: string;
 };
 
-export function useReport({ from, to, projectId, gatewayId }: Params) {
+export function useReport({ from, to, projectId, gatewayId }: FilterParams) {
   return useQuery({
     queryKey: ["report", from, to, projectId, gatewayId],
     queryFn: () => getReport({ from, to, projectId, gatewayId }),

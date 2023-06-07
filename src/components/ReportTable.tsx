@@ -1,18 +1,17 @@
-import { Box } from "@mui/material";
 import { useMemo } from "react";
-import { Gateways } from "../api/useGateways";
-import { Projects } from "../api/useProjects";
-import { Params, Payment } from "../api/useReport";
+import { Gateway } from "../api/useGateways";
+import { Project } from "../api/useProjects";
+import { FilterParams, Payment } from "../api/useReport";
 import PaymentGroup from "./PaymentGroup";
 import PaymentTotal from "./PaymentTotal";
-import TableTitle from "./TableTitle";
 import ReportPaper from "./ReportPaper";
+import TableTitle from "./TableTitle";
 
 type Props = {
-  projects: Projects[];
-  gateways: Gateways[];
+  projects: Project[];
+  gateways: Gateway[];
   payments: Payment[];
-  filter: Params;
+  filter: FilterParams;
 };
 
 type GroupedReport = {
@@ -54,9 +53,11 @@ function ReportTable({ payments, projects, gateways, filter }: Props) {
 
           return (
             <PaymentGroup
+              key={projectId}
               name={name ?? ""}
               payments={group.payments}
               total={group.total}
+              showGateway={true}
             />
           );
         })}

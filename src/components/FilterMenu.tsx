@@ -1,21 +1,20 @@
 import { Button, Stack } from "@mui/material";
+import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import { Gateways } from "../api/useGateways";
-import { Projects } from "../api/useProjects";
+import { Gateway } from "../api/useGateways";
+import { Project } from "../api/useProjects";
+import { FilterParams } from "../api/useReport";
+import { maxDate, minDate } from "../constants";
 import DateFilter from "./DateFilter";
 import ListFilter from "./ListFilter";
-import { Params } from "../api/useReport";
 
-type Filter = Params;
+type Filter = FilterParams;
 
 type Props = {
-  projects: Projects[];
-  gateways: Gateways[];
+  projects: Project[];
+  gateways: Gateway[];
   onGenerate: (filter: Filter) => void;
 };
-
-const minDate = "2021-01-01";
-const maxDate = "2021-12-31";
 
 function FilterMenu({ onGenerate, projects, gateways }: Props) {
   const [filter, setFilter] = useState<Filter>({});
@@ -50,19 +49,29 @@ function FilterMenu({ onGenerate, projects, gateways }: Props) {
       />
       <DateFilter
         label="From date"
-        value={filter.from}
+        value={filter.from ?? minDate}
         onSelect={(value) =>
-          handleFilterSelect({ from: value, to: filter.to ?? maxDate })
+          handleFilterSelect({
+            from: value,
+            to: dayjs(filter.to).isBefore(value) ? value : filter.to,
+          })
         }
       />
       <DateFilter
         label="To date"
-        value={filter.to}
+        value={filter.to ?? maxDate}
         onSelect={(value) =>
-          handleFilterSelect({ to: value, from: filter.from ?? minDate })
+          handleFilterSelect({
+            to: value,
+            from: dayjs(filter.from).isAfter(value) ? value : filter.from,
+          })
         }
       />
-      <Button variant="contained" onClick={() => onGenerate(filter)}>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => onGenerate(filter)}
+      >
         Generate Report
       </Button>
     </Stack>

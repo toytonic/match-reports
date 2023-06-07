@@ -1,8 +1,9 @@
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { Button } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import { useState } from "react";
+import { maxDate, minDate } from "../constants";
 
 type Props = {
   label: string;
@@ -25,8 +26,8 @@ function DateFilter({ label, onSelect, value }: Props) {
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
       value={value ? dayjs(value) : null}
-      minDate={dayjs("2021-01-01")}
-      maxDate={dayjs("2021-12-31")}
+      minDate={dayjs(minDate)}
+      maxDate={dayjs(maxDate)}
       onChange={handleChange}
       slots={{
         field: ({ id, InputProps: { ref } = {}, label }) => (
@@ -37,6 +38,7 @@ function DateFilter({ label, onSelect, value }: Props) {
             endIcon={<CalendarTodayIcon />}
             variant="contained"
             color="secondary"
+            size="small"
           >
             {label}
           </Button>

@@ -1,28 +1,80 @@
-import { Box, Typography } from "@mui/material";
-import FilterMenu from "./FilterMenu";
-import { Params, useReport, Payment } from "../api/useReport";
-import { Gateways, useGateways } from "../api/useGateways";
-import { Projects, useProjects } from "../api/useProjects";
+import { Box, Skeleton, Stack, Typography } from "@mui/material";
 import { useState } from "react";
-import ReportTable from "./ReportTable";
-import PaymentTable from "./PaymentTable";
-import TableTitle from "./TableTitle";
-import PaymentTotal from "./PaymentTotal";
-import ProjectTable from "./ProjectTable";
+import { Gateway, useGateways } from "../api/useGateways";
+import { Project, useProjects } from "../api/useProjects";
+import { FilterParams, Payment, useReport } from "../api/useReport";
 import Empty from "./Empty";
+import FilterMenu from "./FilterMenu";
+import PaymentTable from "./PaymentTable";
+import PaymentTotal from "./PaymentTotal";
+import ProjectGatewayTable from "./ProjectGatewayTable";
+import ReportTable from "./ReportTable";
+import TableTitle from "./TableTitle";
 
-type Filter = Params;
+type Filter = FilterParams;
 
 type Props = {
-  gateways: Gateways[];
-  projects: Projects[];
+  gateways: Gateway[];
+  projects: Project[];
   payments: Payment[];
   filter: Filter;
 };
 
+function Reports() {
+  const [filter, setFilter] = useState<Filter>({});
+  const { data: gateways } = useGateways();
+  const { data: projects } = useProjects();
+  const { data: payments, isLoading: isPaymentsLoading } = useReport(filter);
+
+  return (
+    <>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          alignItems: "flex-start",
+        }}
+      >
+        <Box sx={{ flex: 1 }}>
+          <Typography component="h1" variant="h5">
+            Reports
+          </Typography>
+          <Typography component="h2" color="text.secondary">
+            Easily generate a report of your transactions
+          </Typography>
+        </Box>
+
+        {gateways && projects ? (
+          <FilterMenu
+            gateways={gateways}
+            projects={projects}
+            onGenerate={setFilter}
+          />
+        ) : null}
+      </Box>
+
+      {isPaymentsLoading ? (
+        <Stack spacing={2}>
+          <Skeleton variant="rounded" height={30} />
+          <Skeleton variant="rounded" height={30} />
+          <Skeleton variant="rounded" height={30} />
+        </Stack>
+      ) : payments?.length && gateways && projects ? (
+        <TableSwitch
+          payments={payments}
+          gateways={gateways}
+          projects={projects}
+          filter={filter}
+        />
+      ) : (
+        <Empty />
+      )}
+    </>
+  );
+}
+
 function TableSwitch({ gateways, projects, payments, filter }: Props) {
   if (filter.projectId && filter.gatewayId) {
-    //TODO: move to component?
     const total = payments.reduce((acc, payment) => acc + payment.amount, 0);
 
     return (
@@ -43,12 +95,13 @@ function TableSwitch({ gateways, projects, payments, filter }: Props) {
     );
   }
 
-  if (filter.projectId && !filter.gatewayId) {
+  if (filter.projectId || filter.gatewayId) {
     return (
-      <ProjectTable
+      <ProjectGatewayTable
         payments={payments}
-        projectId={filter.projectId}
-        groupIdKey="projectId"
+        filter={filter}
+        gateways={gateways}
+        projects={projects}
       />
     );
   }
@@ -60,45 +113,6 @@ function TableSwitch({ gateways, projects, payments, filter }: Props) {
       projects={projects}
       filter={filter}
     />
-  );
-}
-
-function Reports() {
-  const [filter, setFilter] = useState<Filter>({});
-  const { data: gateways } = useGateways();
-  const { data: projects } = useProjects();
-  const { data: payments } = useReport(filter);
-  const isFiltersLoaded = gateways && projects;
-  const isDataLoaded = isFiltersLoaded && payments;
-
-  return (
-    <>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4">Reports</Typography>
-        <Typography variant="h6" color="text.secondary">
-          Easily generate a report of your transactions
-        </Typography>
-
-        {isFiltersLoaded ? (
-          <FilterMenu
-            gateways={gateways}
-            projects={projects}
-            onGenerate={setFilter}
-          />
-        ) : null}
-      </Box>
-
-      {isDataLoaded && payments.length ? (
-        <TableSwitch
-          payments={payments}
-          gateways={gateways}
-          projects={projects}
-          filter={filter}
-        />
-      ) : (
-        <Empty />
-      )}
-    </>
   );
 }
 

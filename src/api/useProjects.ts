@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, api } from "./api";
 
-export type Projects = {
+export type Project = {
   description: string;
   gatewayIds: string[];
   image: string;
@@ -17,7 +17,7 @@ export type Projects = {
 async function getProjects() {
   const {
     data: { data },
-  } = await api.get<ApiResponse<Projects[]>>("projects");
+  } = await api.get<ApiResponse<Project[]>>("projects");
   return data;
 }
 

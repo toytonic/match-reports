@@ -33,6 +33,7 @@ function ListFilter({ label, items, onSelect, value }: Props) {
         endIcon={<KeyboardArrowDownIcon />}
         variant="contained"
         color="secondary"
+        size="small"
       >
         {selectedLabel ?? label}
       </Button>

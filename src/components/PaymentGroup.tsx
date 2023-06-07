@@ -1,16 +1,17 @@
 import { Box, Typography } from "@mui/material";
-import { formatCurrency } from "../utils/currency";
 import { useState } from "react";
-import PaymentTable from "./PaymentTable";
 import { Payment } from "../api/useReport";
+import { formatCurrency } from "../utils/currency";
+import PaymentTable from "./PaymentTable";
 
 type Props = {
   name: string;
   payments: Payment[];
   total: number;
+  showGateway?: boolean;
 };
 
-function PaymentGroup({ name, payments, total }: Props) {
+function PaymentGroup({ name, payments, total, showGateway }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,7 +31,9 @@ function PaymentGroup({ name, payments, total }: Props) {
           Total: {formatCurrency(total)} USD
         </Typography>
       </Box>
-      {open ? <PaymentTable payments={payments} showGateway={true} /> : null}
+      {open ? (
+        <PaymentTable payments={payments} showGateway={showGateway} />
+      ) : null}
     </Box>
   );
 }

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, api } from "./api";
 
-type User = {
+export type User = {
   userId: string;
   email: string;
   firstName: string;
