@@ -42,7 +42,7 @@ function PaymentTable({ payments, showGateway }: Props) {
       </TableHead>
       <TableBody>
         {payments.map(({ amount, created, gatewayId, paymentId }) => (
-          <StyledTableRow key={paymentId}>
+          <StyledTableRow key={paymentId} data-cy={`payment-row-${paymentId}`}>
             <TableCell>{formatDate(created)}</TableCell>
             {showGateway ? <TableCell>{gatewayId}</TableCell> : null}
             <TableCell>{paymentId}</TableCell>

@@ -9,9 +9,10 @@ type Props = {
   payments: Payment[];
   total: number;
   showGateway?: boolean;
+  testId?: string;
 };
 
-function PaymentGroup({ name, payments, total, showGateway }: Props) {
+function PaymentGroup({ name, payments, total, showGateway, testId }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -25,6 +26,7 @@ function PaymentGroup({ name, payments, total, showGateway }: Props) {
           borderRadius: 2,
           p: 2,
         }}
+        data-cy={testId}
       >
         <Typography fontWeight="bold">{name}</Typography>
         <Typography fontWeight="bold" sx={{ ml: "auto" }}>

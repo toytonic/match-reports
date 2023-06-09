@@ -58,6 +58,7 @@ function ReportTable({ payments, projects, gateways, filter }: Props) {
               payments={group.payments}
               total={group.total}
               showGateway={true}
+              testId={`payment-group-${projectId}`}
             />
           );
         })}
